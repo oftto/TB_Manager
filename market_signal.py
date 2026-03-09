@@ -1,56 +1,43 @@
-import os
 import yfinance as yf
-import pandas as pd
 import requests
+import os
 
-
-TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
-def send(msg):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    requests.post(url,data={"chat_id":CHAT_ID,"text":msg})
 
-# QQQ data
-qqq = yf.download("QQQ",period="6mo", progress=False, threads=False)
+WATCHLIST = [
+    {"ticker": "005930.KS", "name": "삼성전자", "below": 70000},  # 7만원 이하면 알람
+    {"ticker": "AAPL",      "name": "애플",     "above": 200},    # 200달러 이상이면 알람
+]
 
-if len(data) < 30:
-    print("Not enough data")
-    exit()
+def send_telegram(msg):
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        json={"chat_id": CHAT_ID, "text": msg, "parse_mode": "HTML"}
+    )
 
-close = qqq["Close"]
+def check_stock(item):
+    ticker = yf.Ticker(item["ticker"])
+    price = ticker.fast_info["last_price"]
 
-delta = close.diff()
-gain = delta.clip(lower=0)
-loss = -delta.clip(upper=0)
+    if "above" in item and price >= item["above"]:
+        return f'📈 <b>{item["name"]}</b> 목표가 돌파!\n현재가: {price:,.0f}'
+    if "below" in item and price <= item["below"]:
+        return f'📉 <b>{item["name"]}</b> 하한가 도달!\n현재가: {price:,.0f}'
 
-avg_gain = gain.rolling(14).mean()
-avg_loss = loss.rolling(14).mean()
+    return None
 
-rs = avg_gain / avg_loss
-rsi = 100 - (100/(1+rs))
+if __name__ == "__main__":
+    alerts = []
+    for item in WATCHLIST:
+        result = check_stock(item)
+        if result:
+            alerts.append(result)
 
-rsi_val = rsi.iloc[-1]
+    if alerts:
+        send_telegram("🔔 <b>주가 알람</b>\n\n" + "\n\n".join(alerts))
+        print("알람 전송!")
+    else:
+        print("조건 미충족, 알람 없음")
 
-change = (close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100
-
-vix = yf.download("^VIX",period="5d")
-vix_val = vix["Close"].iloc[-1]
-
-signal = "Regular Buy (50만원)"
-
-if rsi_val <= 30 or vix_val >= 30 or change <= -3:
-    signal = "Double Buy (100만원)"
-
-msg=f"""
-📊 QLD Investment Signal
-
-QQQ change: {change:.2f}%
-RSI: {rsi_val:.2f}
-VIX: {vix_val:.2f}
-
-Action:
-{signal}
-"""
-
-send(msg)
