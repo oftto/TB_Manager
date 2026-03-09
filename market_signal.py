@@ -1,7 +1,8 @@
 import os
-import yfinance as yf
 import pandas as pd
 import requests
+import yfinance as yf
+yf.set_tz_cache_location("/tmp")
 
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
@@ -11,7 +12,9 @@ def send(msg):
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
 
 # QQQ data
-qqq = yf.download("QQQ", period="6mo", progress=False, threads=False)
+# qqq = yf.download("QQQ", period="6mo", progress=False, threads=False)
+ticker = yf.Ticker("QQQ")
+qqq = ticker.history(period="6mo")
 
 if qqq.empty or len(qqq) < 30:
     print("QQQ data download failed")
@@ -38,7 +41,8 @@ rsi_val = rsi.iloc[-1]
 change = (close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100
 
 # VIX
-vix = yf.download("^VIX", period="5d", progress=False, threads=False)
+# vix = yf.download("^VIX", period="5d", progress=False, threads=False)
+vix = yf.Ticker("^VIX").history(period="5d")
 
 if vix.empty:
     print("VIX data failed")
