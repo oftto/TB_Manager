@@ -41,7 +41,6 @@ if qqq.empty:
 
 close = qqq["Close"].tail(60)
 
-send("QQQ ok")
 
 
 # -------------------------
@@ -61,7 +60,6 @@ rsi = 100 - (100 / (1 + rs))
 
 rsi_val = rsi.dropna().iloc[-1]
 
-send("RSI ok")
 
 # -------------------------
 # change
