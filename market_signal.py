@@ -34,32 +34,27 @@ def get_stooq(symbol):
 # -------------------------
 
 import requests
-import re
 
 def get_fear_greed():
 
-    url = "https://edition.cnn.com/markets/fear-and-greed"
-
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    url = "https://api.alternative.me/fng/?limit=1"
 
     try:
 
-        r = requests.get(url, headers=headers, timeout=10)
+        r = requests.get(url, timeout=10)
 
-        html = r.text
+        data = r.json()
 
-        score = re.search(r'"score":([0-9\.]+)', html)
+        score = int(data["data"][0]["value"])
+        rating = data["data"][0]["value_classification"]
 
-        if score:
-            return round(float(score.group(1)),2)
+        return score, rating
 
     except Exception as e:
 
         print("FearGreed error:", e)
 
-    return None
+        return None, None
 
 fear_greed = get_fear_greed()
 
@@ -132,7 +127,7 @@ msg = f"""
 QQQ change: {change:.2f}%
 RSI: {rsi_val:.2f}
 VIX: {vix_val:.2f}
-Fear & Greed: {fear_greed}
+Crypto Fear & Greed: {fear_greed}
 
 Action:
 {signal}
