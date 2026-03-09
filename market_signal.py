@@ -72,7 +72,7 @@ change = (close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100
 # -------------------------
 # VIX
 # -------------------------
-vix = get_stooq("^VIX")
+vix = get_stooq("vi.c")
 
 if vix.empty:
     send("🚨 ERROR: VIX data failed")
