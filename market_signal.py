@@ -1,6 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import requests
+import os
 
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
