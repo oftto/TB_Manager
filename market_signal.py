@@ -15,9 +15,7 @@ def send(msg):
 
 # QQQ data (retry)
 for i in range(3):
-    last_price=yf.Ticker("QQQ").fast_info["last_price"]
-    send(last_price)
-    qqq = yf.Ticker("QQQ").history(period="6mo")
+    qqq = yf.Ticker("QQQ").history(period="1mo")
     if not qqq.empty:
         break
 
