@@ -35,20 +35,23 @@ def get_stooq(symbol):
 
 import requests
 
-import requests
 
 def get_fear_greed():
 
-    url = "https://api.alternative.me/fng/?limit=1"
+    url = "https://production.dataviz.cnn.io/index/fearandgreed/current"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
 
     try:
 
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, headers=headers, timeout=10)
 
         data = r.json()
 
-        score = int(data["data"][0]["value"])
-        rating = data["data"][0]["value_classification"]
+        score = round(data["score"], 2)
+        rating = data["rating"]
 
         return score, rating
 
