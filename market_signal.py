@@ -77,7 +77,7 @@ close = qqq["Close"].tail(60)
 
 
 # -------------------------
-# RSI
+# RSI data
 # -------------------------
 delta = close.diff()
 
