@@ -2,8 +2,8 @@ import yfinance as yf
 import pandas as pd
 import requests
 
-TOKEN = os.environ["BOT_TOKEN"]
-CHAT_ID = os.environ["CHAT_ID"]
+TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 def send(msg):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
