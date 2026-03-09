@@ -3,9 +3,6 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-import traceback
-
-try:
 
 yf.set_tz_cache_location("/tmp")
 
@@ -24,6 +21,8 @@ for i in range(3):
 
 if qqq.empty or len(qqq) < 30:
     print("QQQ data download failed")
+    msg = "🚨 ERROR: QQQ data download failed"
+    send(msg)
     exit()
 
 close = qqq["Close"]
@@ -77,9 +76,4 @@ Action:
 send(msg)
 
 
-except Exception as e:
 
-    error_msg = f"""
-🚨 market_signal ERROR
-
-{str(e)}
