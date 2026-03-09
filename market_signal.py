@@ -52,7 +52,7 @@ fear_greed = get_fear_greed()
 
 if fear_greed is None:
     send("🚨 ERROR: Fear & Greed data failed")
-    exit()
+    #exit()
 
 
 # -------------------------
