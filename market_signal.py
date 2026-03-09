@@ -34,11 +34,11 @@ def get_stooq(symbol):
 # -------------------------
 
 import requests
-
+import re
 
 def get_fear_greed():
 
-    url = "https://production.dataviz.cnn.io/index/fearandgreed/current"
+    url = "https://edition.cnn.com/markets/fear-and-greed"
 
     headers = {
         "User-Agent": "Mozilla/5.0"
@@ -48,18 +48,18 @@ def get_fear_greed():
 
         r = requests.get(url, headers=headers, timeout=10)
 
-        data = r.json()
+        html = r.text
 
-        score = round(data["score"], 2)
-        rating = data["rating"]
+        score = re.search(r'"score":([0-9\.]+)', html)
 
-        return score, rating
+        if score:
+            return round(float(score.group(1)),2)
 
     except Exception as e:
 
         print("FearGreed error:", e)
 
-        return None, None
+    return None
 
 fear_greed = get_fear_greed()
 
