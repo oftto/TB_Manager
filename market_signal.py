@@ -35,34 +35,28 @@ def get_stooq(symbol):
 
 import requests
 
+import requests
+
 def get_fear_greed():
 
-    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
-
-    headers = {
-        "User-Agent": "Mozilla/5.0",
-        "Accept": "application/json",
-        "Referer": "https://edition.cnn.com/markets/fear-and-greed"
-    }
+    url = "https://api.alternative.me/fng/?limit=1"
 
     try:
 
-        r = requests.get(url, headers=headers, timeout=10)
-
-        # 디버깅용
-        print("status:", r.status_code)
-        print("content-type:", r.headers.get("content-type"))
+        r = requests.get(url, timeout=10)
 
         data = r.json()
 
-        score = round(data["fear_and_greed"]["score"], 2)
+        score = int(data["data"][0]["value"])
+        rating = data["data"][0]["value_classification"]
 
-        return score
+        return score, rating
 
     except Exception as e:
 
         print("FearGreed error:", e)
-        return None
+
+        return None, None
 
 fear_greed = get_fear_greed()
 
