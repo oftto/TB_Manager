@@ -16,7 +16,7 @@ def send(msg):
 # QQQ data (retry)
 for i in range(3):
     #qqq = yf.Ticker("QQQ").history(period="1mo")
-    qqq = yf.download("PEP",
+    qqq = yf.download("QQQ",
                  period = "6mo",
                  progress = False
                 )
