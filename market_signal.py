@@ -29,6 +29,31 @@ def get_stooq(symbol):
     except:
         return pd.DataFrame()
 
+# -------------------------
+# Fear & Greed
+# -------------------------
+
+def get_fear_greed():
+
+    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+
+    try:
+        r = requests.get(url, timeout=10)
+        data = r.json()
+
+        value = data["fear_and_greed"]["score"]
+
+        return value
+
+    except:
+        return None
+
+fear_greed = get_fear_greed()
+
+if fear_greed is None:
+    send("🚨 ERROR: Fear & Greed data failed")
+    exit()
+
 
 # -------------------------
 # QQQ data
@@ -94,6 +119,7 @@ msg = f"""
 QQQ change: {change:.2f}%
 RSI: {rsi_val:.2f}
 VIX: {vix_val:.2f}
+Fear & Greed: {fear_greed}
 
 Action:
 {signal}
