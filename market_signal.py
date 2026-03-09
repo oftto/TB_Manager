@@ -1,67 +1,50 @@
 import os
 import pandas as pd
 import requests
-import yfinance as yf
 import time
 
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
-# ----------------------
-# telegram
-# ----------------------
 def send(msg):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=10)
 
 
-# ----------------------
-# yahoo session (차단 회피)
-# ----------------------
-session = requests.Session()
-session.headers.update({
-    "User-Agent": "Mozilla/5.0"
-})
+# -------------------------
+# stooq data fetch
+# -------------------------
+def get_stooq(symbol):
+
+    url = f"https://stooq.com/q/d/l/?s={symbol}&i=d"
+
+    try:
+        df = pd.read_csv(url)
+
+        df["Date"] = pd.to_datetime(df["Date"])
+        df.set_index("Date", inplace=True)
+
+        return df.sort_index()
+
+    except:
+        return pd.DataFrame()
 
 
-# ----------------------
-# data fetch (retry)
-# ----------------------
-def get_data(symbol, period):
-
-    for i in range(5):
-
-        try:
-
-            ticker = yf.Ticker(symbol, session=session)
-            data = ticker.history(period=period)
-
-            if not data.empty:
-                return data
-
-        except Exception as e:
-            print(e)
-
-        time.sleep(3)
-
-    return pd.DataFrame()
-
-
-# ----------------------
+# -------------------------
 # QQQ data
-# ----------------------
-qqq = get_data("QQQ", "3mo")
+# -------------------------
+qqq = get_stooq("qqq.us")
 
 if qqq.empty:
     send("🚨 ERROR: QQQ data download failed")
     exit()
 
-close = qqq["Close"]
+close = qqq["Close"].tail(60)
 
 
-# ----------------------
-# RSI 계산
-# ----------------------
+# -------------------------
+# RSI
+# -------------------------
 delta = close.diff()
 
 gain = delta.clip(lower=0)
@@ -74,43 +57,36 @@ rs = avg_gain / avg_loss
 
 rsi = 100 - (100 / (1 + rs))
 
-if rsi.dropna().empty:
-    send("🚨 ERROR: RSI calculation failed")
-    exit()
-
 rsi_val = rsi.dropna().iloc[-1]
 
 
-# ----------------------
-# daily change
-# ----------------------
+# -------------------------
+# change
+# -------------------------
 change = (close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100
 
 
-# ----------------------
-# VIX data
-# ----------------------
-vix = get_data("^VIX", "5d")
+# -------------------------
+# VIX
+# -------------------------
+vix = get_stooq("^vix")
 
 if vix.empty:
-    send("🚨 ERROR: VIX data download failed")
+    send("🚨 ERROR: VIX data failed")
     exit()
 
 vix_val = vix["Close"].iloc[-1]
 
 
-# ----------------------
+# -------------------------
 # SIGNAL
-# ----------------------
+# -------------------------
 signal = "Regular Buy (50만원)"
 
 if rsi_val <= 30 or vix_val >= 30 or change <= -3:
     signal = "Double Buy (100만원)"
 
 
-# ----------------------
-# MESSAGE
-# ----------------------
 msg = f"""
 📊 QLD Investment Signal
 
