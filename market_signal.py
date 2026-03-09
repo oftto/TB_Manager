@@ -34,7 +34,6 @@ def get_stooq(symbol):
 # -------------------------
 
 import requests
-import time
 
 def get_fear_greed():
 
@@ -42,29 +41,28 @@ def get_fear_greed():
 
     headers = {
         "User-Agent": "Mozilla/5.0",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Referer": "https://edition.cnn.com/markets/fear-and-greed"
     }
 
-    for _ in range(3):  # retry 3회
-        try:
+    try:
 
-            r = requests.get(url, headers=headers, timeout=10)
+        r = requests.get(url, headers=headers, timeout=10)
 
-            if r.status_code != 200:
-                time.sleep(2)
-                continue
+        # 디버깅용
+        print("status:", r.status_code)
+        print("content-type:", r.headers.get("content-type"))
 
-            data = r.json()
+        data = r.json()
 
-            score = round(data["fear_and_greed"]["score"], 2)
+        score = round(data["fear_and_greed"]["score"], 2)
 
-            return score
+        return score
 
-        except Exception as e:
-            print("FearGreed error:", e)
-            time.sleep(2)
+    except Exception as e:
 
-    return None
+        print("FearGreed error:", e)
+        return None
 
 fear_greed = get_fear_greed()
 
