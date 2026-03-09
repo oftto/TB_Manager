@@ -41,6 +41,8 @@ if qqq.empty:
 
 close = qqq["Close"].tail(60)
 
+send("QQQ ok")
+
 
 # -------------------------
 # RSI
@@ -59,6 +61,7 @@ rsi = 100 - (100 / (1 + rs))
 
 rsi_val = rsi.dropna().iloc[-1]
 
+send("RSI ok")
 
 # -------------------------
 # change
@@ -73,7 +76,7 @@ vix = get_stooq("vix")
 
 if vix.empty:
     send("🚨 ERROR: VIX data failed")
-    exit()
+    #exit()
 
 vix_val = vix["Close"].iloc[-1]
 
