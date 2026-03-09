@@ -12,7 +12,11 @@ def send(msg):
     requests.post(url,data={"chat_id":CHAT_ID,"text":msg})
 
 # QQQ data
-qqq = yf.download("QQQ",period="1mo")
+qqq = yf.download("QQQ",period="6mo", progress=False, threads=False)
+
+if len(data) < 30:
+    print("Not enough data")
+    exit()
 
 close = qqq["Close"]
 
