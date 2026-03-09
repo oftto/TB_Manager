@@ -33,20 +33,38 @@ def get_stooq(symbol):
 # Fear & Greed
 # -------------------------
 
+import requests
+import time
+
 def get_fear_greed():
 
     url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 
-    try:
-        r = requests.get(url, timeout=10)
-        data = r.json()
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json"
+    }
 
-        value = data["fear_and_greed"]["score"]
+    for _ in range(3):  # retry 3회
+        try:
 
-        return value
+            r = requests.get(url, headers=headers, timeout=10)
 
-    except:
-        return None
+            if r.status_code != 200:
+                time.sleep(2)
+                continue
+
+            data = r.json()
+
+            score = round(data["fear_and_greed"]["score"], 2)
+
+            return score
+
+        except Exception as e:
+            print("FearGreed error:", e)
+            time.sleep(2)
+
+    return None
 
 fear_greed = get_fear_greed()
 
