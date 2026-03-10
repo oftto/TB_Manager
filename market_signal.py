@@ -131,6 +131,8 @@ signal = "Regular Buy (50만원)"
 
 if rsi_val <= 30 or vix_val >= 30 or change <= -3:
     signal = "Double Buy (100만원)"
+elif  rsi_val <= 25 or vix_val >= 35
+    signal = "TQQQ Buy (100만원) RSI 50 or 10days"
 
 
 msg = f"""
