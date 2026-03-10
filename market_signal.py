@@ -10,7 +10,7 @@ CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 # total stocks
 # -------------------------
 url = os.environ["TARGET_SHEET"]
-df = pd.readcsv(url)
+df = pd.read.csv(url)
 holding=df.iloc[0,-1]
 
 
