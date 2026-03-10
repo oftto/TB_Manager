@@ -113,6 +113,18 @@ vix_val = vix["Close"].iloc[-1]
 
 
 # -------------------------
+# QLD
+# -------------------------
+qld = get_stooq("qld.us").tail(10)
+
+if qld.empty:
+    send("🚨 ERROR: QLD data failed")
+    #exit()
+
+qld_val = qld["Close"].iloc[-1]
+
+
+# -------------------------
 # SIGNAL
 # -------------------------
 signal = "Regular Buy (50만원)"
@@ -125,6 +137,7 @@ msg = f"""
 📊 QLD Investment Signal
 
 QQQ change: {change:.2f}%
+QLD: {qld_val:.2f}
 RSI: {rsi_val:.2f}
 VIX: {vix_val:.2f}
 Crypto Fear & Greed: {fear_greed}
