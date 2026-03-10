@@ -6,6 +6,14 @@ import time
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
+# -------------------------
+# total stocks
+# -------------------------
+url = os.environ["TARGET_SHEET"]
+df = pd.readcsv(url)
+holding=df.iloc[0,-1]
+
+
 def send(msg):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg}, timeout=10)
@@ -137,6 +145,7 @@ elif  rsi_val <= 25 or vix_val >= 35:
 
 msg = f"""
 📊 QLD Investment Signal
+Holding: {holding}
 
 QQQ change: {change:.2f}%
 QLD: {qld_val:.2f}
